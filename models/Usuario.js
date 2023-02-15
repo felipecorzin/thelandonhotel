@@ -7,7 +7,7 @@ const UsuarioSchema = Schema({
     },
     avatar: {
         type: String,
-        default: 'assets/img/avatar.png'
+        default: 'assets/images/avatar.png'
     },
     address: {
         type: String,

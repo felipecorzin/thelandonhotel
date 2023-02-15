@@ -1,13 +1,16 @@
 const { Schema, model } = require('mongoose');
 
 const ActivitySchema = Schema({
-    nombre: {
+    title: {
         type: String,
     },
-    fecha: {
+    desc: {
         type: String,
     },
-    hora: {
+    date: {
+        type: String,
+    },
+    time: {
         type: String,
     },
     img: {

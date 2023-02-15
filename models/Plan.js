@@ -1,21 +1,26 @@
 const { Schema, model } = require('mongoose');
 
 const PlanSchema = Schema({
-    name: {
+    title: {
         type: String,
     },
-    nombre: {
+    desc: {
         type: String,
     },
-    fecha: {
+    date: {
         type: String,
     },
-    hora: {
+    time: {
         type: String,
     },
     img: {
         type: String
     },
+    usuario: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        //required: [ true, 'Debe de existir una referencia a un cliente' ]
+    }
 });
 
 PlanSchema.method("toJSON", function() {

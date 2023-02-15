@@ -3,45 +3,77 @@ const Plan   = require('../models/Plan');
 const Usuario = require('../models/Usuario');
 
 const createPlan = (req, res = response) => {
-    // Validate request
-    if (!req.body.nombre) {
-      res.status(400).send({ message: "Content can not be empty!" });
-      return;
-    }
     const plan = new Plan({
-      name:   req.body.name,
-      nombre: req.body.nombre,
-      fecha: req.body.fecha,
-      hora: req.body.hora,
-      img:  req.body.img
+      title:   req.body.title,
+      desc:   req.body.desc,
+      date:   req.body.date,
+      time:   req.body.time,
+      img:    req.body.img
     });
     // Save infocar in the database
-    Plan.create( plan ).then(() => {
-      res.json({
-          ok: true,
-          plan
-      });
-    }).catch( err => {
-        res.json({
-            ok: false,
-            err
-        });
-    });
+    plan.save((err,plan) => {
+      if (err) {
+          res.status(500).send({ message: err });
+          return;
+      }
+      if (req.body.usuario) {
+          Usuario.find(
+            {
+              name: { $in: req.body.usuario }
+            },
+            (err, usuario) => {
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+    
+              plan.usuario = usuario.map(usuario => usuario._id);
+              plan.save(err => {
+                if (err) {
+                  res.status(500).send({ message: err });
+                  return;
+                }
+    
+                res.send({ message: "El msgChat se creo con éxito!" });
+              });
+            }
+          );
+      } else {
+          Usuario.findOne((err, usuario) => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            plan.usuario = [usuario._id];
+            plan.save(err => {
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+    
+              //res.send({ message: "El msgChat se creo con éxito!" });
+              res.json({
+                  message: "El msgChat se creo con éxito!",
+                  plan
+              });
+            });
+          });
+      }
+  });
 };
 
 const findAll = async(req, res = response ) => {
-  const nombre = req.query.nombre;
-  var condition = nombre ? { nombre: { $regex: new RegExp(nombre), $options: "i" } } : {};
-  Plan.find(condition)
-  .then(data => {
-    res.send(data);
-  })
-  .catch(err => {
-    res.status(500).send({
-      message:
-        err.message || "Some error occurred while retrieving tutorials."
+  const title = req.query.title;
+  var condition = title ? { title: { $regex: new RegExp(title), $options: "i" } } : {};
+  const plans = await Plan.find(condition)
+                            .populate('usuario', 'name')
+                            .exec();
+
+
+    res.json({
+        ok: true,
+        plans
     });
-  });
 };
 
 const findOne = async(req, res = response ) => {

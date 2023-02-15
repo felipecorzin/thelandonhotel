@@ -2,8 +2,8 @@ const { response } = require('express');
 const Activity = require('../models/Activity');
 
 const findAll = async(req, res = response ) => {
-    const nombre = req.query.nombre;
-    var condition = nombre ? { nombre: { $regex: new RegExp(nombre), $options: "i" } } : {};
+    const title = req.query.title;
+    var condition = title ? { title: { $regex: new RegExp(title), $options: "i" } } : {};
 
     Activity.find(condition)
     .then(data => {
